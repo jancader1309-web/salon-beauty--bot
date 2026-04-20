@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beauty Factory — Widget Demo</title>
+<style>
+  body {
+    margin: 0;
+    padding: 40px 20px;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    font-family: sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== WIDGET START ===================== -->
+<div id="bf-widget-wrapper">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+#bf-widget {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  height: 580px;
+  width: 400px;
+  background: #fff;
+  border: 1px solid #e8e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+
+#bf-header {
+  background: #1a1a1a;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#bf-logo-circle {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: #c9a0a0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; font-weight: 500;
+  color: #1a1a1a; flex-shrink: 0;
+}
+
+#bf-header-text { flex: 1; }
+#bf-header-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; font-weight: 400;
+  color: #fff; letter-spacing: 0.02em;
+}
+#bf-header-status { font-size: 11px; color: #c9a0a0; font-weight: 300; letter-spacing: 0.05em; }
+#bf-online-dot { width: 7px; height: 7px; border-radius: 50%; background: #7ecb94; }
+
+#bf-messages {
+  flex: 1; overflow-y: auto;
+  padding: 20px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  background: #fff;
+}
+#bf-messages::-webkit-scrollbar { width: 3px; }
+#bf-messages::-webkit-scrollbar-thumb { background: rgba(201,160,160,0.3); border-radius: 2px; }
+
+.bf-msg { display: flex; flex-direction: column; max-width: 82%; animation: bfFadeUp 0.25s ease; }
+@keyframes bfFadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.bf-msg.bot { align-self: flex-start; }
+.bf-msg.user { align-self: flex-end; }
+
+.bf-bubble {
+  padding: 10px 14px; border-radius: 16px;
+  font-size: 13.5px; line-height: 1.55;
+}
+
+.bf-msg.bot .bf-bubble {
+  background: #f7f3f3; color: #1a1a1a;
+  border: 1px solid #ede5e5; border-bottom-left-radius: 4px;
+}
+.bf-msg.user .bf-bubble {
+  background: #1a1a1a; color: #fff; border-bottom-right-radius: 4px;
+}
+
+.bf-time { font-size: 10px; color: #aaa; margin-top: 4px; padding: 0 4px; }
+.bf-msg.user .bf-time { text-align: right; }
+
+#bf-quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
+.bf-qbtn {
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  padding: 6px 12px; border-radius: 20px;
+  border: 1px solid #c9a0a0; background: transparent;
+  color: #a07070; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.bf-qbtn:hover { background: #f0e4e4; border-color: #a07070; }
+
+#bf-input-area {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #ede5e5;
+  background: #fff;
+}
+
+#bf-input {
+  flex: 1; font-family: 'DM Sans', sans-serif; font-size: 13.5px;
+  padding: 10px 14px; border-radius: 22px;
+  border: 1px solid #e0d8d8; background: #faf8f7;
+  color: #1a1a1a; outline: none; transition: border-color 0.15s;
+}
+#bf-input:focus { border-color: #c9a0a0; }
+#bf-input::placeholder { color: #bbb; }
+
+#bf-send {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: none; background: #1a1a1a; color: #fff;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+}
+#bf-send:hover { background: #333; }
+#bf-send:disabled { background: #ccc; cursor: default; }
+
+.bf-typing {
+  display: flex; align-items: center; gap: 4px;
+  padding: 10px 14px; background: #f7f3f3;
+  border: 1px solid #ede5e5; border-radius: 16px; border-bottom-left-radius: 4px;
+  width: fit-content;
+}
+.bf-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #c9a0a0; animation: bfBounce 1.2s infinite;
+}
+.bf-dot:nth-child(2) { animation-delay: 0.2s; }
+.bf-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bfBounce {
+  0%,60%,100% { transform: translateY(0); }
+  30% { transform: translateY(-5px); }
+}
+</style>
+
+<div id="bf-widget">
+  <div id="bf-header">
+    <div id="bf-logo-circle">BF</div>
+    <div id="bf-header-text">
+      <div id="bf-header-name">Beauty Factory</div>
+      <div id="bf-header-status">asystentka online</div>
+    </div>
+    <div id="bf-online-dot"></div>
+  </div>
+
+  <div id="bf-messages">
+    <div class="bf-msg bot">
+      <div class="bf-bubble">Witaj w <strong>Beauty Factory</strong> ✨<br><br>Jestem Twoją wirtualną asystentką. Chętnie opowiem o naszych zabiegach, cenach lub pomogę umówić wizytę.<br><br>W czym mogę Ci dziś pomóc?</div>
+      <div class="bf-time">teraz</div>
+    </div>
+  </div>
+
+  <div id="bf-quick-btns">
+    <button class="bf-qbtn" onclick="sendQuick('Jakie zabiegi oferujecie?')">zabiegi</button>
+    <button class="bf-qbtn" onclick="sendQuick('Ile kosztuje depilacja laserowa?')">cennik</button>
+    <button class="bf-qbtn" onclick="sendQuick('Kiedy jesteście otwarci?')">godziny</button>
+    <button class="bf-qbtn" onclick="sendQuick('Chcę umówić wizytę')">rezerwacja</button>
+  </div>
+
+  <div id="bf-input-area">
+    <input id="bf-input" type="text" placeholder="Napisz wiadomość..." maxlength="300" />
+    <button id="bf-send" onclick="sendMsg()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M14 8L2 2l2 6-2 6 12-6z" fill="white"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ⚠️ Ustaw URL swojego backendu po deploy na Render.com
+const BACKEND_URL = "https://YOUR-APP.onrender.com";
+
+const conversationHistory = [];
+
+function getTime() {
+  return new Date().toLocaleTimeString('pl-PL', {hour:'2-digit', minute:'2-digit'});
+}
+
+function addMsg(text, role) {
+  const msgs = document.getElementById('bf-messages');
+  const div = document.createElement('div');
+  div.className = `bf-msg ${role}`;
+  const safe = text.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+  div.innerHTML = `<div class="bf-bubble">${safe}</div><div class="bf-time">${getTime()}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('bf-messages');
+  const div = document.createElement('div');
+  div.className = 'bf-msg bot'; div.id = 'bf-typing';
+  div.innerHTML = `<div class="bf-typing"><div class="bf-dot"></div><div class="bf-dot"></div><div class="bf-dot"></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('bf-typing');
+  if (t) t.remove();
+}
+
+function setLoading(val) {
+  document.getElementById('bf-send').disabled = val;
+  document.getElementById('bf-input').disabled = val;
+}
+
+async function callBackend(userText) {
+  conversationHistory.push({ role: 'user', content: userText });
+  showTyping();
+  setLoading(true);
+  try {
+    const res = await fetch(`${BACKEND_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: conversationHistory })
+    });
+    const data = await res.json();
+    const reply = data.reply || 'Przepraszam, coś poszło nie tak. Spróbuj ponownie.';
+    conversationHistory.push({ role: 'assistant', content: reply });
+    removeTyping();
+    addMsg(reply, 'bot');
+  } catch (e) {
+    removeTyping();
+    addMsg('Przepraszam, wystąpił błąd połączenia. Zadzwoń do nas: 664 852 791 📞', 'bot');
+  }
+  setLoading(false);
+}
+
+function sendQuick(text) {
+  addMsg(text, 'user');
+  document.getElementById('bf-quick-btns').style.display = 'none';
+  callBackend(text);
+}
+
+function sendMsg() {
+  const input = document.getElementById('bf-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMsg(text, 'user');
+  document.getElementById('bf-quick-btns').style.display = 'none';
+  callBackend(text);
+}
+
+document.getElementById('bf-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) sendMsg();
+});
+</script>
+</div>
+<!-- ===================== WIDGET END ===================== -->
+
+</body>
+</html>
